@@ -78,7 +78,7 @@ exports.addCategory=catchAsync(async(req,res,next)=>{
 
 
 exports.updateCategory=catchAsync(async(req,res,next)=>{
-if(req.file) req.body.image=`https://dalilalhafr.com/api/public/img/cats/${req.file.filename}`
+if(req.file) req.body.image=`public/img/cats/${req.file.filename}`
 const data = await Category.findByIdAndUpdate(req.params.id,req.body,{new:true,runValidators:true})
 if(!data){
     return next(new AppError(`Category not found`,404))

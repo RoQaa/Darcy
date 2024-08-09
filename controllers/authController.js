@@ -1,8 +1,6 @@
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const validator = require('validator');
 const User = require(`${__dirname}/../models/userModel`)
 const sendEmail = require(`${__dirname}/../utils/email`)
 const { catchAsync } = require(`${__dirname}/../utils/catchAsync`);
@@ -47,9 +45,6 @@ const createSendToken = (user, statusCode, message, res) => {
     token,
   });
 };
-
-
-
 
 exports.SignUp = catchAsync(async (req, res, next) => {
   req.body.role = undefined;

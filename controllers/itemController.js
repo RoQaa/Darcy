@@ -1,67 +1,21 @@
-const multer =require('multer')
-const sharp=require('sharp')
+const multerConfig = require('../utils/MulterConfiguration'); // adjust the path as necessary
+const imageResizer = require('../utils/ResizingMiddleware'); // adjust the path as necessary
 const Item = require(`${__dirname}/../models/itemModel`)
 const Review=require(`${__dirname}/../models/reviewModel`)
 const Category = require(`${__dirname}/../models/categoryModel`)
 const { catchAsync } = require(`${__dirname}/../utils/catchAsync`);
 const AppError = require(`${__dirname}/../utils/appError`);
 const APIFeatures = require(`${__dirname}/../utils/apiFeatures`);
-const multerFilter = (req, file, cb) => {
-    
-  if (file.mimetype.startsWith('image')) {
-    cb(null, true);
-  } else {
-    cb(new AppError('Not an image! Please upload only images.', 400), false);
-  }
-};
-
-const multerStorage = multer.memoryStorage();
-const upload = multer({
-  storage: multerStorage,
-  fileFilter: multerFilter
-});
-
-//multiple
-exports.uploadItemsPhotos = upload.fields([
-  {name:"backGroundImage",maxCount:1},
-  {name:"images",maxCount:10}
-])
-
-// upload.single('fieldName)
-//upload.array('fieldname,maxCount)
-//resize midlleWare
-exports.resizeItemsImages = catchAsync(async (req, res, next) => {
-if(!req.files.backGroundImage||!req.files.images) return next();
-const path=`item-${req.params.id}-${Date.now()}-cover.jpeg`
-req.body.backGroundImage = `https://dalilalhafr.com/api/public/img/items/item-${req.params.id}-${Date.now()}-cover.jpeg`;
-//1) Background Image
-await sharp(req.files.backGroundImage[0].buffer)
-.resize(2000, 1333)
-.toFormat('jpeg')
-.jpeg({ quality: 90 })
-.toFile(`public/img/items/${path}`);
-
-// 2)Images
-req.body.images = [];
-
-await Promise.all(
-  req.files.images.map(async (file, i) => {
-    const filename = `item-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
-
-    await sharp(file.buffer)
-      .resize(2000, 1333)
-      .toFormat('jpeg')
-      .jpeg({ quality: 90 })
-      .toFile(`public/img/items/${filename}`);
-
-    req.body.images.push(`https://dalilalhafr.com/api/public/img/items/${filename}`);
-    
-  })
-);
-next();
-});
 
 
+
+
+// For product photos upload
+exports.uploadProductPhotos = multerConfig.multipleUpload([
+  { name: 'backGroundImage', maxCount: 1 },
+  { name: 'images', maxCount: 10 }
+]);
+exports.resizeProductImages = (productId) => imageResizer.resizeProductImages(productId);
 
 
 exports.updateItem=catchAsync(async(req,res,next)=>{

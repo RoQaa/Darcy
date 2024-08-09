@@ -1,11 +1,10 @@
-const mongoose= require('mongoose');
-const multer=require('multer')
-const sharp=require('sharp');
 
+const multerConfig = require('../utils/MulterConfiguration'); // adjust the path as necessary
+const imageResizer = require('../utils/ResizingMiddleware'); // adjust the path as necessary
 const Review = require('../models/reviewModel');
-const { catchAsync } = require(`${__dirname}/../utils/catchAsync`);
-const AppError = require(`${__dirname}/../utils/appError`);
-const User=require(`${__dirname}/../models/userModel`);
+const { catchAsync } = require(`../utils/catchAsync`);
+const AppError = require(`../utils/appError`);
+const User=require(`../models/userModel`);
 
 
 const filterObj = (obj, ...allowedFields) => {
@@ -16,43 +15,11 @@ const filterObj = (obj, ...allowedFields) => {
     return newObj;
   };
 
+  exports.uploadUserPhoto = multerConfig.singleUpload('profileImage');
+
+  exports.resizeUserPhoto = imageResizer.resizeUserPhoto();
 
 
- const multerFilter = (req, file, cb) => {
-    
-  if (file.mimetype.startsWith('image')) {
-    cb(null, true);
-  } else {
-    cb(new AppError('Not an image! Please upload only images.', 400), false);
-  }
-};
-
-const multerStorage = multer.memoryStorage();
-
-
-
-const upload = multer({
-  storage: multerStorage,
-  limits: { fileSize: 2000000 /* bytes */ },
-  fileFilter: multerFilter
-});
-
-exports.uploadUserPhoto = upload.single('profileImage');
-
-//resize midlleWare
-exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
-  if (!req.file) return next();
-
-  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
-
-  await sharp(req.file.buffer)
-    .resize(500, 500)
-    .toFormat('jpeg')
-    .jpeg({ quality: 90 })
-    .toFile(`public/img/users/${req.file.filename}`);
-
-  next();
-});
 
 exports.updateUser=catchAsync(async(req,res,next)=>{
    
@@ -79,26 +46,7 @@ exports.updateUserByAdmin=catchAsync(async(req,res,next)=>{
   
   const filteredBody = filterObj(req.body, 'name','role','isActive','profileImage');
   
-  const user = await User.aggregate([
-    { $match: { _id: mongoose.Types.ObjectId(id) } },
-    {
-      $set: {
-        name: filteredBody.name,
-        role: filteredBody.role,
-        isActive: filteredBody.isActive,
-        profileImage:filteredBody.profileImage
-      }
-      
-    },
- 
-    {
-      $merge: {
-        into: "users", // The target collection to merge the documents into
-        whenMatched: "replace" // Specifies how to handle matching documents
-      }
-    }
-  ]);
-
+  const user = await User.findByIdAndUpdate(id,filteredBody,{new:true,runValidators:true})
 
   if(!user){
     return next(new AppError(`Accont n't found`,404))

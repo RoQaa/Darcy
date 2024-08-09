@@ -20,7 +20,7 @@ const itemSchema=new mongoose.Schema({
         required: [true, 'Choose Your Category'],
     },
     location:{
-        //TODO: fill location
+       
         type:String,
     },
     ratingsAverage: {
@@ -59,7 +59,7 @@ const itemSchema=new mongoose.Schema({
   
 
   itemSchema.pre(/^find/, function (next) {
-    this.find().populate({
+    this.find().select('-__v').populate({
         path: 'category',
         select: 'title ',
        
