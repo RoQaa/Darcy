@@ -1,55 +1,12 @@
-const multer=require('multer')
+const multerConfig = require('../utils/MulterConfiguration'); // adjust the path as necessary
+const imageResizer = require('../utils/ResizingMiddleware'); // adjust the path as necessary
+const Category=require(`../models/categoryModel`)
+const Product =require(`../models/productModel`)
+const { catchAsync } = require(`../utils/catchAsync`);
+const AppError = require(`../utils/appError`);
 
-const path=require('path')
-const sharp=require('sharp')
-const Category=require(`${__dirname}/../models/categoryModel`)
-const Product =require(`${__dirname}/../models/productModel`)
-const { catchAsync } = require(`${__dirname}/../utils/catchAsync`);
-const AppError = require(`${__dirname}/../utils/appError`);
-
-const multerFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image')) {
-    console.log(file)
-    cb(null, true);
-  } else {
-    cb(new Error('Not an image! Please upload only images.'), false);
-  }
-};
-
-const multerStorage = multer.memoryStorage();
-
-const upload = multer({
-  storage: multerStorage,
-  fileFilter: multerFilter
-});
-
-exports.uploadCatPhoto = upload.single('image');
-
-exports.resizeCatPhoto = async (req, res, next) => {
-  if (!req.file) return next();
-
-  const Extension =  path.extname(req.file.originalname)//mime.extension(req.file.mimetype);
- const fileExtension=Extension.replace('.','')
-
-  // Validate file extension
-  if (!fileExtension || !['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
-    return next(new Error('Unsupported file format!'));
-  }
-
-  const filename = `cat-${req.params.id}-${Date.now()}.${fileExtension}`;
-
-  await sharp(req.file.buffer)
-    .resize(500, 500)
-    .toFormat(fileExtension)
-    .jpeg({ quality: 90 }) // You can adjust options based on the file format
-    .toFile(`public/img/cats/${filename}`);
-
-  req.file.filename = filename;
-
-  next();
-};
-  
-
+exports.uploadCatPhoto = multerConfig.singleUpload('image');
+exports.resizeCatPhoto =imageResizer.resizePhoto('cat','cats');
 
 
 exports.getCategories=catchAsync(async(req,res,next)=>{
@@ -64,10 +21,19 @@ exports.getCategories=catchAsync(async(req,res,next)=>{
     })
 })
 
+exports.getOneCategory=catchAsync(async(req,res,next)=>{
+  const doc = await Category.findById(req.params.id);
+  if(!doc) return next(new AppError(`Not found`,404))
+    res.status(200).json({
+      status:true,
+      data:doc
+  })
+})
 
 exports.addCategory=catchAsync(async(req,res,next)=>{
+    if(req.file) req.body.image=`public/img/cats/${req.file.filename}`
+    const data = await Category.create(req.body)
     
-    const data = await Category.create(req.body);
         res.status(201).json({
             status:true,
             message:"Category Created Successfully",

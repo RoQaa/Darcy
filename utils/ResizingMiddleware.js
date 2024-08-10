@@ -4,17 +4,17 @@ const { catchAsync } = require('./catchAsync'); // Adjust the path as necessary
 class ImageResizer {
   constructor() {}
 
-  resizeUserPhoto() {
+  resizePhoto(name,fileName) {
     return catchAsync(async (req, res, next) => {
       if (!req.file) return next();
 
-      req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+      req.file.filename = `${name}-${req.user.id}-${Date.now()}.jpeg`;
 
       await sharp(req.file.buffer)
         .resize(500, 500)
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
-        .toFile(`public/img/users/${req.file.filename}`);
+        .toFile(`public/img/${fileName}/${req.file.filename}`);
 
       next();
     });
@@ -34,6 +34,7 @@ class ImageResizer {
         .jpeg({ quality: 90 })
         .toFile(`public/img/products/${backGroundPath}`);
 
+
       // 2) Resize Images with Color Names
       req.body.images = [];
 
@@ -48,7 +49,7 @@ class ImageResizer {
             .jpeg({ quality: 90 })
             .toFile(`public/img/products/${filename}`);
 
-          req.body.images.push(`public/img/products/${filename}`);
+          req.body.colors[i].image=`public/img/products/${filename}`
         })
       );
       next();

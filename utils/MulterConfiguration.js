@@ -17,7 +17,7 @@ class MulterConfig {
   singleUpload(fieldName) {
     return multer({
       storage: this.multerStorage,
-      limits: { fileSize: 2000000 },
+      limits: { fileSize: 4000000 },
       fileFilter: this.multerFilter
     }).single(fieldName);
   }

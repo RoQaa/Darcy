@@ -7,12 +7,12 @@ const helmet = require('helmet'); // security
 const mongoSanitize = require('express-mongo-sanitize'); // security
 const xss = require('xss-clean'); // security
 const cors =require('cors')
-const AppError = require(`${__dirname}/utils/appError`);
-const userRouter=require(`${__dirname}/routes/userRouter`)
-const categoryRouter=require(`${__dirname}/routes/categoryRouter`)
-const productsRouter=require(`${__dirname}/routes/productRouter`)
-const reviewRouter=require(`${__dirname}/routes/reviewRouter`)
-const globalErrorHandler = require(`${__dirname}/controllers/errorController`);
+const AppError = require(`./utils/appError`);
+const userRouter=require(`./routes/userRouter`)
+const categoryRouter=require(`./routes/categoryRouter`)
+const productsRouter=require(`./routes/productRouter`)
+const reviewRouter=require(`./routes/reviewRouter`)
+const globalErrorHandler = require(`./controllers/errorController`);
 const app = express();
 
 // Global MiddleWares
@@ -75,11 +75,11 @@ app.use((req, res, next) => {
 
 
 app.use('/api/auth',userRouter)
-/*
+
 app.use('/api/cats',categoryRouter)
-app.use('/api/products',productsRouter)
-app.use('/api/reviews',reviewRouter)
-*/
+// app.use('/api/products',productsRouter)
+// app.use('/api/reviews',reviewRouter)
+
 app.all('*', (req, res, next) => {
 
   next(

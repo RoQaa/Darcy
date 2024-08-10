@@ -1,7 +1,7 @@
 const express=require('express');
 const router = express.Router();
-const authController=require(`${__dirname}/../controllers/authController`)
-const categoryController=require(`${__dirname}/../controllers/categoryController`)
+const authController=require(`../controllers/authController`)
+const categoryController=require(`../controllers/categoryController`)
 
 
 
@@ -9,13 +9,13 @@ const categoryController=require(`${__dirname}/../controllers/categoryController
 router.use(authController.protect)
 
 router.get('/getCats',categoryController.getCategories)
-
+router.get('/getOneCat/:id',categoryController.getOneCategory)
 
 
 // Restrict all routes after this middleware
-router.use(authController.restrictTo('admin','manger'));
+router.use(authController.restrictTo('admin'));
 
-router.post('/addCat',categoryController.addCategory)
+router.post('/create',categoryController.uploadCatPhoto,categoryController.resizeCatPhoto,categoryController.addCategory)
 router.patch('/updateCategory/:id',categoryController.uploadCatPhoto,categoryController.resizeCatPhoto,categoryController.updateCategory)
 router.delete('/deleteCategory/:id',categoryController.deleteCategory)
 

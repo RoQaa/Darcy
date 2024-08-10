@@ -17,7 +17,7 @@ const filterObj = (obj, ...allowedFields) => {
 
   exports.uploadUserPhoto = multerConfig.singleUpload('profileImage');
 
-  exports.resizeUserPhoto = imageResizer.resizeUserPhoto();
+  exports.resizeUserPhoto =imageResizer.resizePhoto('user','users');
 
 
 

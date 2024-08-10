@@ -1,5 +1,5 @@
 const mongoose= require('mongoose');
-const categorySchema=mongoose.Schema({
+const categorySchema= new mongoose.Schema({
     title:{
         type:String,
         required:[true,'Please Enter Category title'],
@@ -8,9 +8,7 @@ const categorySchema=mongoose.Schema({
     },
     image:{
         type:String,
-      //  required:[true,'Please Enter Image'],
-    //  default:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR63XIy9VsNtzBDN5WqZPXvBpoHdmq8YUlSYEfwNghm0Q&s'
-       
+        required:[true,'Please Enter Image'],
     }
 })
 
