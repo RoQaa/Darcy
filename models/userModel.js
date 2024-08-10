@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema({
         enum:['user','admin','manger'],
         default:'user'
     },
+    phoneNumber:{
+      type:String,
+      unique:true,
+      required:true,
+    },
     password: {
         type: String,
         required: [true, 'Please Enter your Password'],
@@ -81,7 +86,7 @@ const userSchema = new mongoose.Schema({
 
 
   userSchema.pre(/^find/, function (next) {
-    this.find({ isActive: { $ne: false } })
+    this.find({ isActive: { $ne: false } }).select('-__v')
     next();
   });
   

@@ -34,14 +34,6 @@ const createSendToken = (user, statusCode, message, res) => {
   res.status(statusCode).json({
     status: true,
     message,
-
-    data: {
-      name: user.name,
-      // email:user.email,
-      // profileImage: user.profileImage,
-      //isPaid: user.isPaid,
-      role: user.role,
-    },
     token,
   });
 };

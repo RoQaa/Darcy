@@ -2,7 +2,6 @@ const multerConfig = require('../utils/MulterConfiguration'); // adjust the path
 const imageResizer = require('../utils/ResizingMiddleware'); // adjust the path as necessary
 const Product = require(`./../models/productModel`)
 const Review=require(`./../models/reviewModel`)
-const Category = require(`./../models/categoryModel`)
 const { catchAsync } = require(`./../utils/catchAsync`);
 const AppError = require(`./../utils/appError`);
 const APIFeatures = require(`./../utils/apiFeatures`);
