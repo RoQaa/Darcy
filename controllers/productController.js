@@ -84,13 +84,13 @@ res.status(200).json({
 exports.search = catchAsync(async (req, res, next) => {
   const searchTerm = req.body.word;
 
-  const data = await Product.find({
+  const data = await Product.find({category:req.params.categoryId,
     $or: [
       { name: { $regex: searchTerm, $options: "i" } },
       { description: { $regex: searchTerm, $options: "i" } }
     ]
   });
-
+  if(!data||data.length===0) return next(new AppError('not found',404))
   res.status(200).json({
     status: true,
     data

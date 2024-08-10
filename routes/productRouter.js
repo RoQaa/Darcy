@@ -8,7 +8,7 @@ router.use('/:itemId/reviews', reviewRouter);
 router.use(authController.protect)
 router.get('/getAll/:categoryId',productController.getProducts)
 router.get('/getOne/:productId',productController.getOneProduct)
-
+router.get('/search/:categoryId',productController.search)
 //Admin
 router.use(authController.restrictTo('admin'))
 router.post('/create',productController.uploadProductPhotos,productController.resizeProductImages,productController.addProduct)
