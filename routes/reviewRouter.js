@@ -5,11 +5,11 @@ const reviewController=require(`../controllers/reviewController`)
 
 router.use(authController.protect)
 
-router.get('/getReviews',reviewController.getReviews)
+router.get('/getReviews/:productId',reviewController.getReviews)
 router.post('/addReview',reviewController.addReviews)
 
-router.patch('/updateUserReview',reviewController.updateUserReview)
-router.delete('/deleteUserReview',reviewController.deleteUserReview)
+router.patch('/updateUserReview/:reviewId',reviewController.updateUserReview)
+router.delete('/deleteUserReview/:reviewId',reviewController.deleteUserReview)
 
 
 router.use(authController.restrictTo('admin',))

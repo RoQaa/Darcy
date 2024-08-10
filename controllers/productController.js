@@ -1,36 +1,22 @@
 const multerConfig = require('../utils/MulterConfiguration'); // adjust the path as necessary
 const imageResizer = require('../utils/ResizingMiddleware'); // adjust the path as necessary
-const Product = require(`${__dirname}/../models/productModel`)
-const Review=require(`${__dirname}/../models/reviewModel`)
-const Category = require(`${__dirname}/../models/categoryModel`)
-const { catchAsync } = require(`${__dirname}/../utils/catchAsync`);
-const AppError = require(`${__dirname}/../utils/appError`);
-const APIFeatures = require(`${__dirname}/../utils/apiFeatures`);
+const Product = require(`./../models/productModel`)
+const Review=require(`./../models/reviewModel`)
+const Category = require(`./../models/categoryModel`)
+const { catchAsync } = require(`./../utils/catchAsync`);
+const AppError = require(`./../utils/appError`);
+const APIFeatures = require(`./../utils/apiFeatures`);
+
 
 
 
 
 // For product photos upload
 exports.uploadProductPhotos = multerConfig.multipleUpload([
-  { name: 'backGroundImage', maxCount: 1 },
+//  { name: 'backGroundImage', maxCount: 1 },
   { name: 'images', maxCount: 10 }
 ]);
-exports.resizeProductImages = (productId) => imageResizer.resizeProductImages(productId);
-
-
-exports.updateProduct=catchAsync(async(req,res,next)=>{
-const data = await Product.findByIdAndUpdate(req.params.id,req.body,{new:true,runValidators:true})
-
-  if(!data){
-    return next(new AppError(`Product not found`,404))
-  }
-  res.status(200).json({
-    status:true,
-    message:"Product Updated Successfully",
-    //data
-  })
-
-})
+exports.resizeProductImages =   imageResizer.resizeProductImages();
 
 
 exports.addProduct = catchAsync(async (req, res, next) => {
@@ -46,46 +32,25 @@ exports.addProduct = catchAsync(async (req, res, next) => {
 })
 
 
+exports.updateProduct=catchAsync(async(req,res,next)=>{
+const data = await Product.findByIdAndUpdate(req.params.productId,req.body,{new:true,runValidators:true})
+
+  if(!data){
+    return next(new AppError(`Product not found`,404))
+  }
+  res.status(200).json({
+    status:true,
+    message:"Product Updated Successfully",
+    //data
+  })
+
+})
+
+
 exports.getProducts = catchAsync(async (req, res, next) => {
  
- 
-    const   data = await Product.aggregate([
-        {
-          $lookup: {
-            from: Category.collection.name,
-            localField: 'category',
-            foreignField: '_id',
-            pipeline: [
-              {
-                $project: {
-                  title: 1,
-                },
-              },
-              {
-                $match: {
-                  title: req.body.title,
-                },
-              },
-            ],
-            as: 'category',
-          },
-        },
-        {
-          $match: {
-            'category.title': req.body.title,
-              
-          },
-        },
-        {
-          $project: {
-            __v: 0,
-           // category:0,
-            images:0,
-            About:0
-          },
-        },
-      ]);
-    
+ const data = await Product.find({category:req.params.categoryId})
+  
 
 
      if(!data||data.length===0){
@@ -104,8 +69,8 @@ exports.getProducts = catchAsync(async (req, res, next) => {
 
 
 
-exports.getSpecificProduct=catchAsync(async(req,res,next)=>{
-const product=await Product.findById(req.body.productId).populate('reviews');
+exports.getOneProduct=catchAsync(async(req,res,next)=>{
+const product=await Product.findById(req.params.productId).populate('reviews');
 if(!product){
     return next(new AppError(`product not found`,404))
 }
@@ -115,36 +80,27 @@ res.status(200).json({
 })
 
 })
-exports.getSpecificProductByAdmin=catchAsync(async(req,res,next)=>{
-  const product=await Product.findById(req.params.id).populate('reviews');
-  if(!product){
-      return next(new AppError(`product not found`,404))
-  }
-  res.status(200).json({
-      status:true,
-      data:product   
-  })
-  
-  })
 
-exports.search=catchAsync(async(req,res,next)=>{
-  
 
- const data = await Product.find({
-  name:{
-    $regex:req.body.word,
-    $options:"i"
-  }
- })
+exports.search = catchAsync(async (req, res, next) => {
+  const searchTerm = req.body.word;
+
+  const data = await Product.find({
+    $or: [
+      { name: { $regex: searchTerm, $options: "i" } },
+      { description: { $regex: searchTerm, $options: "i" } }
+    ]
+  });
 
   res.status(200).json({
-    status:true,
+    status: true,
     data
-  })
-})
+  });
+});
+
 
 exports.deleteProduct=catchAsync(async(req,res,next)=>{
-  await Review.deleteMany({product:req.params.id})
+  await Review.deleteMany({product:req.params.productId})
   const product = await Product.findByIdAndDelete(req.params.id)
   if(!product){
     return next(new AppError(`Product not found`,404))
@@ -165,23 +121,6 @@ exports.aliasTopProducts = (req, res, next) => {
   next();
 };
 
-exports.getAllProducts=catchAsync(async(req,res,next)=>{
-      // EXECUTE QUERY
-      const features = new APIFeatures(Product.find(), req.query)
-      .filter()
-      .sort()
-      .limitFields()
-      .paginate();
-    const products = await features.query;
-    if(!products){
-      return next(new AppError(`Data n't found`,404))
-    }
-    res.status(200).json({
-      status:true,
-      length:products.length,
-      data:products
-    })
-})
 
 
 exports.getAllProductsOfCategoreis=catchAsync(async(req,res,next)=>{

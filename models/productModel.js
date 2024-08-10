@@ -2,6 +2,7 @@ const mongoose=require('mongoose');
 
 const colorSchema = new mongoose.Schema({
   name: { type: String, required: true }, // The name of the color (e.g., 'Red', 'Blue')
+  hexaCode:{ type: String, required: true },
   image: { type: String, required: true }, // The URL or path to the image for this color
 });
 
@@ -14,13 +15,10 @@ const productSchema=new mongoose.Schema({
     description:{
         type:String,
     },
-    backGroundImage:{
-        type:String,
-      // required:[true,'Please Enter  an Image'],
-    },
+ 
     colors: [colorSchema], // Array of color objects
     category:{
-        type: mongoose.Schema.ObjectId, //population data
+        type: mongoose.Schema.Types.ObjectId, //population data
         ref: 'Category',
         required: [true, 'Choose Your Category'],
     },
@@ -36,15 +34,19 @@ const productSchema=new mongoose.Schema({
         type: Number,
         default: 0
       },
-  //  images:[String],
-    About:String,
+      size:[{
+        type:String,
+        required:true,
+      }],
+      price:{
+        type:Number,
+        required:true
+      },
+      createdAt:{type:Date,default:Date.now()}
+  
 },
-
-
-
-
 {
-    timestamps: true,
+
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   })
@@ -60,18 +62,10 @@ const productSchema=new mongoose.Schema({
   });
   
 
-/*
-  productSchema.pre(/^find/, function (next) {
-    this.find().select('-__v').populate({
-        path: 'category',
-        select: 'title ',
-       
-      })
-
+  productSchema.pre(/^find/,function (next){
+    this.populate({path:'category',select:'title'}).select('-__v')
     next();
-
   })
-  */
 
   const Product=mongoose.model('Product',productSchema)
 

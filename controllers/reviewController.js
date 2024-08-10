@@ -1,9 +1,9 @@
-const Review = require(`${__dirname}/../models/reviewModel`)
-const { catchAsync } = require(`${__dirname}/../utils/catchAsync`);
-const AppError = require(`${__dirname}/../utils/appError`);
+const Review = require(`../models/reviewModel`)
+const { catchAsync } = require(`../utils/catchAsync`);
+const AppError = require(`../utils/appError`);
 
 exports.getReviews = (catchAsync(async (req, res, next) => {
-    const data = await Review.find({ product: req.body.productId })
+    const data = await Review.find({ product: req.params.productId })
 
     if (!data) {
         return new next(new AppError(`data n't found`, 404))
@@ -21,12 +21,7 @@ exports.getReviews = (catchAsync(async (req, res, next) => {
 }))
 
 exports.addReviews = (catchAsync(async (req, res, next) => {
-    const user = req.user.id;
-    if (!req.body) {
-        return next(new AppError(`data n't found`, 404))
-    }
-    req.body.user = user
-
+     req.body.user = req.user.id;
     await Review.create(req.body)
     res.status(200).json({
         status: true,
@@ -66,7 +61,7 @@ exports.updateReview = (catchAsync(async (req, res, next) => {
 exports.updateUserReview=catchAsync(async(req,res,next)=>{
 //const doc = await Review.findOneAndUpdate({_id:req.body.reviewId,user:req.user.id}, req.body, { new: true, runValidators: true })
 const doc = await Review.findOne({
-    _id: req.body.reviewId,
+    _id: req.params.reviewId,
     user: req.user.id
   });
 
@@ -88,14 +83,11 @@ res.status(200).json({
 })
 
 exports.deleteUserReview=catchAsync(async(req,res,next)=>{
-    const doc = await Review.findOne({
-        _id: req.body.reviewId,
+    const doc = await Review.findOneAndDelete({
+        _id: req.params.reviewId,
         user: req.user.id
       });
-      if(!doc ){
-        return next(new AppError(`You are n't allowed to do this action`,404))
-    }
-    await doc.deleteOne(); // or existingReview.remove()
+     if(!doc) return next (new AppError('not found',404))
     res.status(200).json({
         status: true,
         message:"review Deleted"

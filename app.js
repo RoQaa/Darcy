@@ -77,8 +77,8 @@ app.use((req, res, next) => {
 app.use('/api/auth',userRouter)
 
 app.use('/api/cats',categoryRouter)
-// app.use('/api/products',productsRouter)
-// app.use('/api/reviews',reviewRouter)
+app.use('/api/products',productsRouter)
+app.use('/api/reviews',reviewRouter)
 
 app.all('*', (req, res, next) => {
 

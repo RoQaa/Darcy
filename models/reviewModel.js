@@ -1,18 +1,18 @@
 const mongoose = require('mongoose')
-const Product = require(`${__dirname}/productModel`)
-const reviewSchema = mongoose.Schema({
+const Product = require(`./productModel`)
+const reviewSchema = new  mongoose.Schema({
   review: {
     type: String,
     required: [true, 'Enter your review']
   },
   user: {
-    type: mongoose.Schema.ObjectId, //population data
+    type: mongoose.Schema.Types.ObjectId, //population data
     ref: 'User',
     required: [true, 'need token'],
     
   },
   product: {
-    type: mongoose.Schema.ObjectId, //population data //String
+    type: mongoose.Schema.Types.ObjectId, //population data //String
     ref: 'Product',
     required: [true, "Product n't found"],
   },
@@ -23,12 +23,12 @@ const reviewSchema = mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now()
   },
 }, {
  // timestamps: true,
- // toJSON: { virtuals: true },
- // toObject: { virtuals: true },
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
 })
 
 reviewSchema.index({ product: 1, user: 1 }, { unique: true });
@@ -83,8 +83,7 @@ reviewSchema.post('save', function () {
 // findByIdAndUpdate
 // findByIdAndDelete
 reviewSchema.pre(/^findOneAnd/, async function (next) {
-  this.r = await this.findOne();
-  //.clone();//  clone() => work here,  to prevernt err:query has already executed
+  this.r = await this.findOne().clone();//  clone() => work here,  to prevernt err:query has already executed
    
   next();
 });
