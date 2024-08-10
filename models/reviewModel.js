@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const Item = require(`${__dirname}/itemModel`)
+const Product = require(`${__dirname}/productModel`)
 const reviewSchema = mongoose.Schema({
   review: {
     type: String,
@@ -11,10 +11,10 @@ const reviewSchema = mongoose.Schema({
     required: [true, 'need token'],
     
   },
-  item: {
+  product: {
     type: mongoose.Schema.ObjectId, //population data //String
-    ref: 'Item',
-    required: [true, "Item n't found"],
+    ref: 'Product',
+    required: [true, "Product n't found"],
   },
   rating: {
     type: Number,
@@ -31,7 +31,7 @@ const reviewSchema = mongoose.Schema({
  // toObject: { virtuals: true },
 })
 
-reviewSchema.index({ item: 1, user: 1 }, { unique: true });
+reviewSchema.index({ product: 1, user: 1 }, { unique: true });
 
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
@@ -46,14 +46,14 @@ reviewSchema.pre(/^find/, function (next) {
 })
 
 
-reviewSchema.statics.calcAverageRatings = async function (itemId) {
+reviewSchema.statics.calcAverageRatings = async function (productId) {
   const stats = await this.aggregate([
     {
-      $match: { item: itemId }
+      $match: { product: productId }
     },
     {
       $group: {
-        _id: '$item',
+        _id: '$product',
         nRating: { $sum: 1 },
         avgRating: { $avg: '$rating' }
       }
@@ -63,12 +63,12 @@ reviewSchema.statics.calcAverageRatings = async function (itemId) {
   // console.log(stats);
 
   if (stats.length > 0) {
-    await Item.findByIdAndUpdate(itemId, {
+    await Product.findByIdAndUpdate(productId, {
       ratingsQuantity: stats[0].nRating,
       ratingsAverage: stats[0].avgRating
     });
   } else {
-    await Item.findByIdAndUpdate(itemId, {
+    await Product.findByIdAndUpdate(productId, {
       ratingsQuantity: 0,
       ratingsAverage: 4.5
     });
@@ -77,7 +77,7 @@ reviewSchema.statics.calcAverageRatings = async function (itemId) {
 
 reviewSchema.post('save', function () {
   // this points to current review
-  this.constructor.calcAverageRatings(this.item);
+  this.constructor.calcAverageRatings(this.product);
 });
 
 // findByIdAndUpdate
@@ -92,7 +92,7 @@ reviewSchema.pre(/^findOneAnd/, async function (next) {
 reviewSchema.post(/^findOneAnd/, async function () {
    //await this.findOne();// does NOT work here, query has already executed
   
-  await this.r.constructor.calcAverageRatings(this.r.item);
+  await this.r.constructor.calcAverageRatings(this.r.product);
 });
 
 const Review = mongoose.model('Review', reviewSchema)

@@ -3,7 +3,7 @@ const { catchAsync } = require(`${__dirname}/../utils/catchAsync`);
 const AppError = require(`${__dirname}/../utils/appError`);
 
 exports.getReviews = (catchAsync(async (req, res, next) => {
-    const data = await Review.find({ item: req.body.itemId })
+    const data = await Review.find({ product: req.body.productId })
 
     if (!data) {
         return new next(new AppError(`data n't found`, 404))

@@ -1,6 +1,6 @@
 const multerConfig = require('../utils/MulterConfiguration'); // adjust the path as necessary
 const imageResizer = require('../utils/ResizingMiddleware'); // adjust the path as necessary
-const Item = require(`${__dirname}/../models/itemModel`)
+const Product = require(`${__dirname}/../models/productModel`)
 const Review=require(`${__dirname}/../models/reviewModel`)
 const Category = require(`${__dirname}/../models/categoryModel`)
 const { catchAsync } = require(`${__dirname}/../utils/catchAsync`);
@@ -18,38 +18,38 @@ exports.uploadProductPhotos = multerConfig.multipleUpload([
 exports.resizeProductImages = (productId) => imageResizer.resizeProductImages(productId);
 
 
-exports.updateItem=catchAsync(async(req,res,next)=>{
-const data = await Item.findByIdAndUpdate(req.params.id,req.body,{new:true,runValidators:true})
+exports.updateProduct=catchAsync(async(req,res,next)=>{
+const data = await Product.findByIdAndUpdate(req.params.id,req.body,{new:true,runValidators:true})
 
   if(!data){
-    return next(new AppError(`Item not found`,404))
+    return next(new AppError(`Product not found`,404))
   }
   res.status(200).json({
     status:true,
-    message:"Item Updated Successfully",
+    message:"Product Updated Successfully",
     //data
   })
 
 })
 
 
-exports.addItem = catchAsync(async (req, res, next) => {
+exports.addProduct = catchAsync(async (req, res, next) => {
 
-  const data = await Item.create(req.body);
+  const data = await Product.create(req.body);
 
   res.status(200).json({
       status: true,
-      message:`item created Successfully`,
+      message:`product created Successfully`,
       data
   })
 
 })
 
 
-exports.getItems = catchAsync(async (req, res, next) => {
+exports.getProducts = catchAsync(async (req, res, next) => {
  
  
-    const   data = await Item.aggregate([
+    const   data = await Product.aggregate([
         {
           $lookup: {
             from: Category.collection.name,
@@ -104,25 +104,25 @@ exports.getItems = catchAsync(async (req, res, next) => {
 
 
 
-exports.getSpecificItem=catchAsync(async(req,res,next)=>{
-const item=await Item.findById(req.body.itemId).populate('reviews');
-if(!item){
-    return next(new AppError(`item not found`,404))
+exports.getSpecificProduct=catchAsync(async(req,res,next)=>{
+const product=await Product.findById(req.body.productId).populate('reviews');
+if(!product){
+    return next(new AppError(`product not found`,404))
 }
 res.status(200).json({
     status:true,
-    data:item   
+    data:product   
 })
 
 })
-exports.getSpecificItemByAdmin=catchAsync(async(req,res,next)=>{
-  const item=await Item.findById(req.params.id).populate('reviews');
-  if(!item){
-      return next(new AppError(`item not found`,404))
+exports.getSpecificProductByAdmin=catchAsync(async(req,res,next)=>{
+  const product=await Product.findById(req.params.id).populate('reviews');
+  if(!product){
+      return next(new AppError(`product not found`,404))
   }
   res.status(200).json({
       status:true,
-      data:item   
+      data:product   
   })
   
   })
@@ -130,7 +130,7 @@ exports.getSpecificItemByAdmin=catchAsync(async(req,res,next)=>{
 exports.search=catchAsync(async(req,res,next)=>{
   
 
- const data = await Item.find({
+ const data = await Product.find({
   name:{
     $regex:req.body.word,
     $options:"i"
@@ -143,11 +143,11 @@ exports.search=catchAsync(async(req,res,next)=>{
   })
 })
 
-exports.deleteItem=catchAsync(async(req,res,next)=>{
-  await Review.deleteMany({item:req.params.id})
-  const item = await Item.findByIdAndDelete(req.params.id)
-  if(!item){
-    return next(new AppError(`Item not found`,404))
+exports.deleteProduct=catchAsync(async(req,res,next)=>{
+  await Review.deleteMany({product:req.params.id})
+  const product = await Product.findByIdAndDelete(req.params.id)
+  if(!product){
+    return next(new AppError(`Product not found`,404))
   }
   res.status(202).json({
     status:true,
@@ -158,46 +158,46 @@ exports.deleteItem=catchAsync(async(req,res,next)=>{
 
 
 
-exports.aliasTopItems = (req, res, next) => {
+exports.aliasTopProducts = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage';
   req.query.fields = 'name,description,backGroundImage';
   next();
 };
 
-exports.getAllItems=catchAsync(async(req,res,next)=>{
+exports.getAllProducts=catchAsync(async(req,res,next)=>{
       // EXECUTE QUERY
-      const features = new APIFeatures(Item.find(), req.query)
+      const features = new APIFeatures(Product.find(), req.query)
       .filter()
       .sort()
       .limitFields()
       .paginate();
-    const items = await features.query;
-    if(!items){
+    const products = await features.query;
+    if(!products){
       return next(new AppError(`Data n't found`,404))
     }
     res.status(200).json({
       status:true,
-      length:items.length,
-      data:items
+      length:products.length,
+      data:products
     })
 })
 
 
-exports.getAllItemsOfCategoreis=catchAsync(async(req,res,next)=>{
+exports.getAllProductsOfCategoreis=catchAsync(async(req,res,next)=>{
   // EXECUTE QUERY
-  const features = new APIFeatures(Item.find({category:req.params.id}), req.query)
+  const features = new APIFeatures(Product.find({category:req.params.id}), req.query)
   .filter()
   .sort()
   .limitFields()
   .paginate();
-const items = await features.query;
-if(!items){
+const products = await features.query;
+if(!products){
   return next(new AppError(`Data n't found`,404))
 }
 res.status(200).json({
   status:true,
-  length:items.length,
-  data:items
+  length:products.length,
+  data:products
 })
 })

@@ -3,7 +3,7 @@ const multer=require('multer')
 const path=require('path')
 const sharp=require('sharp')
 const Category=require(`${__dirname}/../models/categoryModel`)
-const Item =require(`${__dirname}/../models/itemModel`)
+const Product =require(`${__dirname}/../models/productModel`)
 const { catchAsync } = require(`${__dirname}/../utils/catchAsync`);
 const AppError = require(`${__dirname}/../utils/appError`);
 
@@ -93,7 +93,7 @@ if(!data){
 
 exports.deleteCategory=catchAsync(async(req,res,next)=>{
   const catId=req.params.id;
-  await Item.deleteMany({category:catId})
+  await Product.deleteMany({category:catId})
   
  const cat= await Category.findByIdAndDelete(catId)
   if(!cat){
@@ -102,6 +102,6 @@ exports.deleteCategory=catchAsync(async(req,res,next)=>{
   }
   res.status(200).json({
     status:true,
-    message:"Category and her Items deleted Successfully"
+    message:"Category and her Products deleted Successfully"
   })
 })

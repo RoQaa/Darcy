@@ -10,7 +10,7 @@ const cors =require('cors')
 const AppError = require(`${__dirname}/utils/appError`);
 const userRouter=require(`${__dirname}/routes/userRouter`)
 const categoryRouter=require(`${__dirname}/routes/categoryRouter`)
-const itemsRouter=require(`${__dirname}/routes/itemRouter`)
+const productsRouter=require(`${__dirname}/routes/productRouter`)
 const reviewRouter=require(`${__dirname}/routes/reviewRouter`)
 const globalErrorHandler = require(`${__dirname}/controllers/errorController`);
 const app = express();
@@ -77,7 +77,7 @@ app.use((req, res, next) => {
 app.use('/api/auth',userRouter)
 /*
 app.use('/api/cats',categoryRouter)
-app.use('/api/items',itemsRouter)
+app.use('/api/products',productsRouter)
 app.use('/api/reviews',reviewRouter)
 */
 app.all('*', (req, res, next) => {

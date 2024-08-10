@@ -1,10 +1,15 @@
 const mongoose=require('mongoose');
 
-const itemSchema=new mongoose.Schema({
+const colorSchema = new mongoose.Schema({
+  name: { type: String, required: true }, // The name of the color (e.g., 'Red', 'Blue')
+  image: { type: String, required: true }, // The URL or path to the image for this color
+});
+
+const productSchema=new mongoose.Schema({
     name:{
         type:String,
-        required:[true,'Item must have a name'],
-        unique:[true,'You already have item with the same name']
+        required:[true,'Product must have a name'],
+        unique:[true,'You already have product with the same name']
     },
     description:{
         type:String,
@@ -12,17 +17,14 @@ const itemSchema=new mongoose.Schema({
     backGroundImage:{
         type:String,
       // required:[true,'Please Enter  an Image'],
-       
     },
+    colors: [colorSchema], // Array of color objects
     category:{
         type: mongoose.Schema.ObjectId, //population data
         ref: 'Category',
         required: [true, 'Choose Your Category'],
     },
-    location:{
-       
-        type:String,
-    },
+
     ratingsAverage: {
         type: Number,
         default: 4.5,
@@ -34,7 +36,7 @@ const itemSchema=new mongoose.Schema({
         type: Number,
         default: 0
       },
-    images:[String],
+  //  images:[String],
     About:String,
 },
 
@@ -42,23 +44,24 @@ const itemSchema=new mongoose.Schema({
 
 
 {
-    //timestamps: true,
+    timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   })
 
-  itemSchema.index({category:'text'})
-  itemSchema.index({ name: 'text', description: 'text' });
+  productSchema.index({ category: 1, name: 1 }, { unique: true });
+  productSchema.index({ name: 'text', description: 'text' });
 
  // Virtual populate
- itemSchema.virtual('reviews', {
+ productSchema.virtual('reviews', {
     ref: 'Review',
-    foreignField: 'item',
+    foreignField: 'product',
     localField: '_id'
   });
   
 
-  itemSchema.pre(/^find/, function (next) {
+/*
+  productSchema.pre(/^find/, function (next) {
     this.find().select('-__v').populate({
         path: 'category',
         select: 'title ',
@@ -68,8 +71,8 @@ const itemSchema=new mongoose.Schema({
     next();
 
   })
-  
+  */
 
-  const Item=mongoose.model('Item',itemSchema)
+  const Product=mongoose.model('Product',productSchema)
 
-  module.exports=Item;
+  module.exports=Product;
