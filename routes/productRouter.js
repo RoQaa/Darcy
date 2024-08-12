@@ -2,10 +2,12 @@ const express=require('express');
 const router = express.Router();
 const authController=require(`../controllers/authController`)
 const productController=require(`./../controllers/productController`)
-const reviewRouter = require(`./reviewRouter`);
 
-router.use('/:itemId/reviews', reviewRouter);
+
+
 router.use(authController.protect)
+router.get('/aliasTopProducts',productController.aliasTopProducts,productController.getAllProducts)
+router.get('/lastArrivalsProducts',productController.lastArrivalsProducts,productController.getAllProducts)
 router.get('/getAll/:categoryId',productController.getProducts)
 router.get('/getOne/:productId',productController.getOneProduct)
 router.get('/search/:categoryId',productController.search)

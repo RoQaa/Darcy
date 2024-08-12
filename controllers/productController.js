@@ -114,17 +114,24 @@ exports.deleteProduct=catchAsync(async(req,res,next)=>{
 
 
 exports.aliasTopProducts = (req, res, next) => {
-  req.query.limit = '5';
+  req.query.limit = '6';
   req.query.sort = '-ratingsAverage';
-  req.query.fields = 'name,description,backGroundImage';
+  //req.query.fields = 'name,description,backGroundImage';
+  next();
+};
+exports.lastArrivalsProducts = (req, res, next) => {
+  req.query.limit = '6';
+  req.query.sort = '-createdAt';
+  //req.query.fields = 'name,description,backGroundImage';
   next();
 };
 
 
 
-exports.getAllProductsOfCategoreis=catchAsync(async(req,res,next)=>{
+
+exports.getAllProducts=catchAsync(async(req,res,next)=>{
   // EXECUTE QUERY
-  const features = new APIFeatures(Product.find({category:req.params.id}), req.query)
+  const features = new APIFeatures(Product.find(), req.query)
   .filter()
   .sort()
   .limitFields()

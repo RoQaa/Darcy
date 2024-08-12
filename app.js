@@ -13,6 +13,7 @@ const categoryRouter=require(`./routes/categoryRouter`)
 const productsRouter=require(`./routes/productRouter`)
 const reviewRouter=require(`./routes/reviewRouter`)
 const favouriteRouter=require('./routes/favouriteRouter')
+const orderRouter=require('./routes/orderRouter')
 const globalErrorHandler = require(`./controllers/errorController`);
 const app = express();
 
@@ -76,11 +77,11 @@ app.use((req, res, next) => {
 
 
 app.use('/api/auth',userRouter)
-
 app.use('/api/cats',categoryRouter)
 app.use('/api/products',productsRouter)
 app.use('/api/reviews',reviewRouter)
 app.use('/api/favourites',favouriteRouter)
+app.use('/api/orders',orderRouter)
 app.all('*', (req, res, next) => {
 
   next(

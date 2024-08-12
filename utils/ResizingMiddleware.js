@@ -3,19 +3,23 @@ const { catchAsync } = require('./catchAsync'); // Adjust the path as necessary
 
 class ImageResizer {
   constructor() {}
+  async getFileExtension(buffer) {
+    const metadata = await sharp(buffer).metadata();
+    return metadata.format;
+  }
 
-  resizePhoto(name,fileName) {
+  resizePhoto(name, fileName) {
     return catchAsync(async (req, res, next) => {
       if (!req.file) return next();
 
-      req.file.filename = `${name}-${req.user.id}-${Date.now()}.jpeg`;
+      const ext = await this.getFileExtension(req.file.buffer);
+      const filename = `${name}-${req.user.id}-${Date.now()}.${ext}`;
 
       await sharp(req.file.buffer)
         .resize(500, 500)
-        .toFormat('jpeg')
-        .jpeg({ quality: 90 })
-        .toFile(`public/img/${fileName}/${req.file.filename}`);
+        .toFile(`public/img/${fileName}/${filename}`);
 
+      req.file.filename = filename;
       next();
     });
   }
@@ -31,8 +35,9 @@ class ImageResizer {
       await Promise.all(
         req.files.images.map(async (file, i) => {
           const colorName = req.body.colors[i].name; // Assuming color names are sent in req.body.colors
-          const filename = `product-${req.user.id}-${Date.now()}-${colorName}.jpeg`;
-
+          const ext = await this.getFileExtension(file.buffer);
+          const filename = `product-${req.user.id}-${Date.now()}-${colorName}.${ext}`;
+          
           await sharp(file.buffer)
             .resize(2000, 1333)
             .toFormat('jpeg')

@@ -1,10 +1,10 @@
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const User = require(`${__dirname}/../models/userModel`)
-const sendEmail = require(`${__dirname}/../utils/email`)
-const { catchAsync } = require(`${__dirname}/../utils/catchAsync`);
-const AppError = require(`${__dirname}/../utils/appError`);
+const User = require(`../models/userModel`)
+const sendEmail = require(`../utils/email`)
+const { catchAsync } = require(`../utils/catchAsync`);
+const AppError = require(`../utils/appError`);
 
 const signToken = (id) => {
   const token = jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -234,7 +234,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   //3)check if user still exist in the route
-  const currentUser = await User.findById(decoded.id);
+  const currentUser = await User.findById(decoded.id).select('-passwordOtp -passwordOtpExpires -passwordChangedAt');
   if (!currentUser) {
 
     return next(

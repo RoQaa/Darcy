@@ -7,17 +7,19 @@ class MulterConfig {
   }
 
   multerFilter(req, file, cb) {
-    if (file.mimetype.startsWith('image')) {
+    // Define allowed MIME types
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    
+    if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new AppError('Not an image! Please upload only images.', 400), false);
+      cb(new AppError('Invalid file type! Please upload a JPEG, PNG, or JPG image.', 400), false);
     }
   }
 
   singleUpload(fieldName) {
     return multer({
       storage: this.multerStorage,
-   //   limits: { fileSize: 4000000 },
       fileFilter: this.multerFilter
     }).single(fieldName);
   }

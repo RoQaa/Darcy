@@ -63,7 +63,7 @@ const productSchema=new mongoose.Schema({
   
 
   productSchema.pre(/^find/,function (next){
-    this.populate({path:'category',select:'title'}).select('-__v')
+    this.populate('category').select('-__v')
     next();
   })
 
