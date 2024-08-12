@@ -70,7 +70,8 @@ exports.getAllOrders = catchAsync(async (req, res, next) => {
           products: { $push: "$products" }, // Reassemble products array
           total_order_price: { $first: "$total_order_price" }, // Preserve original fields
           createdAt: { $first: "$createdAt" },
-          user: { $first: "$user" }
+         // user: { $first: "$user" },
+          notes:{$first:"$notes"}
         }
       },
       {

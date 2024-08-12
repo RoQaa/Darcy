@@ -39,7 +39,7 @@ class ImageResizer {
           const filename = `product-${req.user.id}-${Date.now()}-${colorName}.${ext}`;
           
           await sharp(file.buffer)
-            .resize(2000, 1333)
+           // .resize(2000, 1333) //TODO:tesst
             .toFormat('jpeg')
             .jpeg({ quality: 90 })
             .toFile(`public/img/products/${filename}`);
