@@ -38,7 +38,7 @@ const sendEmail=async (options) => {
         subject:options.subject,
         
         //html:
-        //TODO: change Template
+       
         template:'OTP',
         context:{
             name:options.name,
@@ -47,7 +47,7 @@ const sendEmail=async (options) => {
     };
 
     //3) Actullay send the email
-   await transporter.sendMail(mailOptions,function(err,info){
+    transporter.sendMail(mailOptions,function(err,info){
     if(err){
         console.log(err)
     }

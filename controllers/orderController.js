@@ -10,7 +10,7 @@ exports.createOrder=catchAsync(async(req,res,next)=>{
     res.status(201).json({
         status:true,
         message:"Added to your order",
-       // order
+        order
     })
 })
 
@@ -47,7 +47,7 @@ exports.getAllOrders = catchAsync(async (req, res, next) => {
               $project: {
                 name: 1,
                 ratingsAverage: 1,
-                category: "$category.title", // Include the category name
+                category: "$category", // Include the category name
                 colors: {
                   $filter: {
                     input: "$colors",
@@ -71,7 +71,11 @@ exports.getAllOrders = catchAsync(async (req, res, next) => {
           total_order_price: { $first: "$total_order_price" }, // Preserve original fields
           createdAt: { $first: "$createdAt" },
          // user: { $first: "$user" },
-          notes:{$first:"$notes"}
+          notes:{$first:"$notes"},
+          governate:{$first:"$governate"},
+          city:{$first:"$city"},
+          street:{$first:"$street"},
+          order_number:{$first:"$order_number"}
         }
       },
       {
@@ -96,6 +100,7 @@ exports.getAllOrders = catchAsync(async (req, res, next) => {
   
     res.status(200).json({
       status: true,
+      length:data[0].orders.length, 
       data: data[0].orders,
       total_price_of_all_orders: data[0].total_price_of_all_orders
     });

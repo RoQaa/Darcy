@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
-
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 // Schema for individual order products
+
 const orderProductSchema = new mongoose.Schema({
   product: {
     type: mongoose.Schema.Types.ObjectId,
@@ -22,7 +23,7 @@ const orderProductSchema = new mongoose.Schema({
   },
   total_price: {
     type: Number,
-   // required: true
+ //   required: true
   }
 });
 
@@ -57,8 +58,19 @@ const orderSchema = new mongoose.Schema({
   street:{
     type:String,
     required:true
-  }
+  },
+  order_number: {
+    type: Number,
+    unique: true, // Ensure that the order number is unique
+  },
+
+
 });
+
+
+
+  // Apply the auto-increment plugin to the order_number field
+  orderSchema.plugin(AutoIncrement, { inc_field: 'order_number' });
 
 // Middleware to calculate total_price for each product and total_order_price before saving the order
 orderSchema.pre('save', async function (next) {
@@ -79,6 +91,7 @@ orderSchema.pre('save', async function (next) {
     next(error);
   }
 });
+
 orderSchema.pre(/^find/,function(next){
   this.select('-__v -user')
   next();

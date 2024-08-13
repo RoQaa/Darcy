@@ -4,7 +4,6 @@
   "description": "Darcy Applictaion",
   "main": "server.js",
   "scripts": {
-    
     "start": "nodemon server.js"
   },
   "repository": {
@@ -30,6 +29,7 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^6.12.7",
+    "mongoose-sequence": "^6.0.1",
     "morgan": "^1.10.0",
     "morgan-body": "^2.6.9",
     "multer": "^1.4.1",

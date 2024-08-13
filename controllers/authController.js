@@ -80,7 +80,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email }).select(
-    'email'
+    'email name'
   );
   if (!user) {
 
