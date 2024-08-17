@@ -9,7 +9,7 @@ class MulterConfig {
   multerFilter(req, file, cb) {
     // Define allowed MIME types
     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-    
+
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {

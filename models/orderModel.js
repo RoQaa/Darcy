@@ -17,13 +17,13 @@ const orderProductSchema = new mongoose.Schema({
     required: true,
     min: [1, 'Quantity must be at least 1']
   },
-  color:{
-    type:String,
-    required:true
+  color: {
+    type: String,
+    required: true
   },
   total_price: {
     type: Number,
- //   required: true
+    //   required: true
   }
 });
 
@@ -44,20 +44,20 @@ const orderSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  notes:{
-    type:String,
+  notes: {
+    type: String,
   },
-  governate:{
-    type:String,
-    required:true
+  governate: {
+    type: String,
+    required: true
   },
-  city:{
-    type:String,
-    required:true
+  city: {
+    type: String,
+    required: true
   },
-  street:{
-    type:String,
-    required:true
+  street: {
+    type: String,
+    required: true
   },
   order_number: {
     type: Number,
@@ -69,8 +69,8 @@ const orderSchema = new mongoose.Schema({
 
 
 
-  // Apply the auto-increment plugin to the order_number field
-  orderSchema.plugin(AutoIncrement, { inc_field: 'order_number' });
+// Apply the auto-increment plugin to the order_number field
+orderSchema.plugin(AutoIncrement, { inc_field: 'order_number' });
 
 // Middleware to calculate total_price for each product and total_order_price before saving the order
 orderSchema.pre('save', async function (next) {
@@ -92,7 +92,7 @@ orderSchema.pre('save', async function (next) {
   }
 });
 
-orderSchema.pre(/^find/,function(next){
+orderSchema.pre(/^find/, function (next) {
   this.select('-__v -user')
   next();
 })

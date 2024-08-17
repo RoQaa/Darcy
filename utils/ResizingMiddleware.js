@@ -2,7 +2,7 @@ const sharp = require('sharp');
 const { catchAsync } = require('./catchAsync'); // Adjust the path as necessary
 
 class ImageResizer {
-  constructor() {}
+  constructor() { }
   async getFileExtension(buffer) {
     const metadata = await sharp(buffer).metadata();
     return metadata.format;
@@ -16,7 +16,7 @@ class ImageResizer {
       const filename = `${name}-${req.user.id}-${Date.now()}.${ext}`;
 
       await sharp(req.file.buffer)
-       // .resize(500, 500)
+        // .resize(500, 500)
         .toFile(`public/img/${fileName}/${filename}`);
 
       req.file.filename = filename;
@@ -28,7 +28,7 @@ class ImageResizer {
     return catchAsync(async (req, res, next) => {
       if (!req.files.images) return next();
 
-     
+
       // 2) Resize Images with Color Names
       req.body.images = [];
 
@@ -37,14 +37,14 @@ class ImageResizer {
           const colorName = req.body.colors[i].name; // Assuming color names are sent in req.body.colors
           const ext = await this.getFileExtension(file.buffer);
           const filename = `product-${req.user.id}-${Date.now()}-${colorName}.${ext}`;
-          
+
           await sharp(file.buffer)
-           // .resize(2000, 1333) 
+            // .resize(2000, 1333) 
             .toFormat('jpeg')
             .jpeg({ quality: 90 })
             .toFile(`public/img/products/${filename}`);
 
-          req.body.colors[i].image=`public/img/products/${filename}`
+          req.body.colors[i].image = `public/img/products/${filename}`
         })
       );
       next();

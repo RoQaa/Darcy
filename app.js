@@ -1,20 +1,20 @@
 const express = require('express');
 const morgan = require('morgan');
 const morganBody = require('morgan-body');
-const path=require('path')
+const path = require('path')
 const rateLimit = require('express-rate-limit'); // security
 const helmet = require('helmet'); // security
 const mongoSanitize = require('express-mongo-sanitize'); // security
 const xss = require('xss-clean'); // security
-const cors =require('cors')
+const cors = require('cors')
 const AppError = require(`./utils/appError`);
-const userRouter=require(`./routes/userRouter`)
-const categoryRouter=require(`./routes/categoryRouter`)
-const productsRouter=require(`./routes/productRouter`)
-const reviewRouter=require(`./routes/reviewRouter`)
-const favouriteRouter=require('./routes/favouriteRouter')
-const orderRouter=require('./routes/orderRouter')
-const advertisementRouter=require('./routes/advertisementRouter')
+const userRouter = require(`./routes/userRouter`)
+const categoryRouter = require(`./routes/categoryRouter`)
+const productsRouter = require(`./routes/productRouter`)
+const reviewRouter = require(`./routes/reviewRouter`)
+const favouriteRouter = require('./routes/favouriteRouter')
+const orderRouter = require('./routes/orderRouter')
+const advertisementRouter = require('./routes/advertisementRouter')
 const globalErrorHandler = require(`./controllers/errorController`);
 const app = express();
 
@@ -23,11 +23,9 @@ const app = express();
 //set security http headers
 app.use(helmet()); // set el htttp headers property
 
-
-
-
 app.use(cors());
-app.options('*',cors())
+app.options('*', cors())
+
 // Poclicy for blocking images
 app.use((req, res, next) => {
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
@@ -43,7 +41,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 //Limit requests from same API
-// hna bn3ml limitng l3dd el mrat elly log in 34an  el brute force attacks
+
 const limiter = rateLimit({
   max: 1000,
   windowMs: 60 * 60 * 1000,
@@ -62,10 +60,7 @@ app.use(mongoSanitize());
 //Data sanitization against cross site scripting attacks (XSS)
 app.use(xss());
 
-
-
-
-app.use('/api/public',express.static(path.join(__dirname, 'public')));
+app.use('/api/public', express.static(path.join(__dirname, 'public')));
 
 
 app.use((req, res, next) => {
@@ -77,19 +72,21 @@ app.use((req, res, next) => {
 
 
 
-app.use('/api/auth',userRouter)
-app.use('/api/cats',categoryRouter)
-app.use('/api/products',productsRouter)
-app.use('/api/reviews',reviewRouter)
-app.use('/api/favourites',favouriteRouter)
-app.use('/api/orders',orderRouter)
-app.use('/api/advertisements',advertisementRouter)
+app.use('/api/auth', userRouter)
+app.use('/api/cats', categoryRouter)
+app.use('/api/products', productsRouter)
+app.use('/api/reviews', reviewRouter)
+app.use('/api/favourites', favouriteRouter)
+app.use('/api/orders', orderRouter)
+app.use('/api/advertisements', advertisementRouter)
+
 app.all('*', (req, res, next) => {
 
   next(
     new AppError(`Can't find the url ${req.originalUrl} on this server`, 404)
   );
 });
+
 app.use(globalErrorHandler);
 
 module.exports = app;

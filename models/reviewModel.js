@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const Product = require(`./productModel`)
-const reviewSchema = new  mongoose.Schema({
+const reviewSchema = new mongoose.Schema({
   review: {
     type: String,
     required: [true, 'Enter your review']
@@ -9,7 +9,7 @@ const reviewSchema = new  mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, //population data
     ref: 'User',
     required: [true, 'need token'],
-    
+
   },
   product: {
     type: mongoose.Schema.Types.ObjectId, //population data //String
@@ -26,7 +26,7 @@ const reviewSchema = new  mongoose.Schema({
     default: Date.now()
   },
 }, {
- // timestamps: true,
+  // timestamps: true,
   toJSON: { virtuals: true },
   toObject: { virtuals: true },
 })
@@ -58,7 +58,7 @@ reviewSchema.statics.calcAverageRatings = async function (productId) {
         avgRating: { $avg: '$rating' }
       }
     },
-   
+
   ]);
   // console.log(stats);
 
@@ -84,13 +84,13 @@ reviewSchema.post('save', function () {
 // findByIdAndDelete
 reviewSchema.pre(/^findOneAnd/, async function (next) {
   this.r = await this.findOne().clone();//  clone() => work here,  to prevernt err:query has already executed
-   
+
   next();
 });
 
 reviewSchema.post(/^findOneAnd/, async function () {
-   //await this.findOne();// does NOT work here, query has already executed
-  
+  //await this.findOne();// does NOT work here, query has already executed
+
   await this.r.constructor.calcAverageRatings(this.r.product);
 });
 
