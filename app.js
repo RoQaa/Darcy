@@ -17,7 +17,7 @@ const orderRouter = require('./routes/orderRouter')
 const advertisementRouter = require('./routes/advertisementRouter')
 const globalErrorHandler = require(`./controllers/errorController`);
 const app = express();
-
+app.set("trust proxy", 1);
 // Global MiddleWares
 
 //set security http headers
