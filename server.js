@@ -1,39 +1,16 @@
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
+const http = require("http");
+const app = require("./app");
 
-process.on('uncaughtException', (err) => {
-  console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
-  console.log(err.name, err.message);
-  process.exit(1);
-});
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config({ path: `${__dirname}/config.env` });
+}
 
-dotenv.config({ path: `${__dirname}/config.env` });
-
-const http = require('http');
-const app = require(`${__dirname}/app`);
-const server = http.createServer(app);
-
-
-const DB = process.env.DATABASE
-mongoose.set("strictQuery", true);
-mongoose
-  .connect(DB)
-  .then((con) => {
-    console.log('DB connection Successfully');
+if (process.env.NODE_ENV === "development") {
+  const server = http.createServer(app);
+  server.listen(5000, () => {
+    console.log("🚀 Local server running");
   });
+}
 
-
-
-const port = process.env.PORT || 5000;
-const host = process.env.HOST || "127.0.0.1";
-server.listen(port, host, () => {
-  console.log(`App running on host ${host} and on port ${port}.`);
-});
-
-process.on('unhandledRejection', (err) => {
-  console.log('UNHANDLED REJECTION! 💥 Shutting down...');
-  console.log(err.name, err.message);
-  server.close(() => {
-    process.exit(1);
-  });
-});
+module.exports = app;
