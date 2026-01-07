@@ -1,3 +1,4 @@
+const connectDB = require("../db");
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');

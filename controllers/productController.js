@@ -1,3 +1,4 @@
+const connectDB = require("../db");
 const multerConfig = require('../utils/MulterConfiguration'); // adjust the path as necessary
 const imageResizer = require('../utils/ResizingMiddleware'); // adjust the path as necessary
 const Product = require(`./../models/productModel`)

@@ -1,3 +1,4 @@
+const connectDB = require("../db");
 const mongoose = require('mongoose')
 const Order = require('../models/orderModel');
 const { catchAsync } = require(`./../utils/catchAsync`);

@@ -1,3 +1,4 @@
+const connectDB = require("../db");
 const Favourite = require('../models/favouriteModel');
 const { catchAsync } = require(`./../utils/catchAsync`);
 const AppError = require(`./../utils/appError`);
