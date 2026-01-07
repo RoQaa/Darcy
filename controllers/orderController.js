@@ -5,6 +5,7 @@ const AppError = require(`./../utils/appError`);
 
 
 exports.createOrder = catchAsync(async (req, res, next) => {
+ await connectDB();
   req.body.user = req.user.id;
   const order = await Order.create(req.body);
   res.status(201).json({
@@ -17,6 +18,7 @@ exports.createOrder = catchAsync(async (req, res, next) => {
 
 
 exports.getAllOrders = catchAsync(async (req, res, next) => {
+ await connectDB();
   const userId = mongoose.Types.ObjectId(req.user.id); // Ensure the user ID is treated as an ObjectId
 
   const data = await Order.aggregate([

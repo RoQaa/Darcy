@@ -21,6 +21,7 @@ exports.resizeUserPhoto = imageResizer.resizePhoto('user', 'users');
 
 
 exports.updateUser = catchAsync(async (req, res, next) => {
+ await connectDB();
 
   //Filtered out unwanted fields names that are not allowed to be updated
   const filteredBody = filterObj(req.body, 'name');
@@ -41,6 +42,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
 })
 
 exports.updateUserByAdmin = catchAsync(async (req, res, next) => {
+ await connectDB();
   const id = req.params.id;
 
   const filteredBody = filterObj(req.body, 'name', 'role', 'isActive', 'profileImage');
@@ -60,6 +62,7 @@ exports.updateUserByAdmin = catchAsync(async (req, res, next) => {
 
 
 exports.getUsers = catchAsync(async (req, res, next) => {
+ await connectDB();
   let data
   if (req.params.id) {
     data = await User.findById(req.params.id);
@@ -91,6 +94,7 @@ exports.getUsers = catchAsync(async (req, res, next) => {
   })
 })
 exports.deleteUser = catchAsync(async (req, res, next) => {
+ await connectDB();
 
   const user = await User.findById(req.params.id)
   if (!user) {
@@ -107,6 +111,7 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
 
 
 exports.deleteMyAccount = catchAsync(async (req, res, next) => {
+ await connectDB();
   await Review.deleteMany({ user: req.user.id })
   await User.findByIdAndDelete(req.user.id)
   res.cookie('jwt', 'loggedout', {
@@ -123,6 +128,7 @@ exports.deleteMyAccount = catchAsync(async (req, res, next) => {
 
 
 exports.search = catchAsync(async (req, res, next) => {
+ await connectDB();
   const searchTerm = req.query.term;
   //const results = await User.find({ $text: { $search: searchTerm } }).limit(10);
   const results = await User.find({
@@ -142,6 +148,7 @@ exports.search = catchAsync(async (req, res, next) => {
 })
 
 exports.creataAccount = catchAsync(async (req, res, next) => {
+ await connectDB();
   const newUser = await User.create(req.body);
 
   if (!newUser) {
@@ -153,6 +160,7 @@ exports.creataAccount = catchAsync(async (req, res, next) => {
   })
 })
 exports.profilePage = catchAsync(async (req, res, next) => {
+ await connectDB();
   ///protect
   const data = req.user;
   if (!data) {

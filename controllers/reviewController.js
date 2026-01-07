@@ -3,6 +3,7 @@ const { catchAsync } = require(`../utils/catchAsync`);
 const AppError = require(`../utils/appError`);
 
 exports.getReviews = (catchAsync(async (req, res, next) => {
+ await connectDB();
     const data = await Review.find({ product: req.params.productId })
 
     if (!data) {
@@ -21,6 +22,7 @@ exports.getReviews = (catchAsync(async (req, res, next) => {
 }))
 
 exports.addReviews = (catchAsync(async (req, res, next) => {
+ await connectDB();
     req.body.user = req.user.id;
     await Review.create(req.body)
     res.status(200).json({
@@ -30,6 +32,7 @@ exports.addReviews = (catchAsync(async (req, res, next) => {
 }))
 
 exports.deleteReview = (catchAsync(async (req, res, next) => {
+ await connectDB();
     const doc = await Review.findByIdAndDelete(req.params.id)
 
 
@@ -45,6 +48,7 @@ exports.deleteReview = (catchAsync(async (req, res, next) => {
 
 
 exports.updateReview = (catchAsync(async (req, res, next) => {
+ await connectDB();
     const doc = await Review.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
 
     if (!doc) {
@@ -59,6 +63,7 @@ exports.updateReview = (catchAsync(async (req, res, next) => {
 }))
 
 exports.updateUserReview = catchAsync(async (req, res, next) => {
+ await connectDB();
     //const doc = await Review.findOneAndUpdate({_id:req.body.reviewId,user:req.user.id}, req.body, { new: true, runValidators: true })
     const doc = await Review.findOne({
         _id: req.params.reviewId,
@@ -83,6 +88,7 @@ exports.updateUserReview = catchAsync(async (req, res, next) => {
 })
 
 exports.deleteUserReview = catchAsync(async (req, res, next) => {
+ await connectDB();
     const doc = await Review.findOneAndDelete({
         _id: req.params.reviewId,
         user: req.user.id

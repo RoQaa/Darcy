@@ -10,6 +10,7 @@ exports.uploadAdvPhoto = multerConfig.singleUpload('image');
 exports.resizeAdvPhoto = imageResizer.resizePhoto('Advertisement', 'Advertisements');
 
 exports.create = catchAsync(async (req, res, next) => {
+ await connectDB();
     if (req.file) req.body.image = `public/img/Advertisements/${req.file.filename}`;
     const doc = await Advertisement.create(req.body);
     res.status(200).json({
@@ -19,6 +20,7 @@ exports.create = catchAsync(async (req, res, next) => {
 })
 
 exports.get = catchAsync(async (req, res, next) => {
+ await connectDB();
     const doc = await Advertisement.find();
     if (!doc) return next(new AppError(`not found`, 404))
     res.status(200).json({
@@ -27,6 +29,7 @@ exports.get = catchAsync(async (req, res, next) => {
     })
 })
 exports.update = catchAsync(async (req, res, next) => {
+ await connectDB();
     if (req.file) req.body.image = `public/img/Advertisements/${req.file.filename}`;
     const doc = await Advertisement.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!doc) return next(new AppError(`not found`, 404))
@@ -37,6 +40,7 @@ exports.update = catchAsync(async (req, res, next) => {
     })
 })
 exports.delete = catchAsync(async (req, res, next) => {
+ await connectDB();
     const doc = await Advertisement.findById(req.params.id);
     if (!doc) return next(new AppError(`not found`, 404))
     fs.unlink(doc.image, (err) => {

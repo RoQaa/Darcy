@@ -10,6 +10,7 @@ exports.resizeCatPhoto = imageResizer.resizePhoto('cat', 'cats');
 
 
 exports.getCategories = catchAsync(async (req, res, next) => {
+ await connectDB();
 
   const cats = await Category.find();
   if (!cats) {
@@ -22,6 +23,7 @@ exports.getCategories = catchAsync(async (req, res, next) => {
 })
 
 exports.getOneCategory = catchAsync(async (req, res, next) => {
+ await connectDB();
   const doc = await Category.findById(req.params.id);
   if (!doc) return next(new AppError(`Not found`, 404))
   res.status(200).json({
@@ -31,6 +33,7 @@ exports.getOneCategory = catchAsync(async (req, res, next) => {
 })
 
 exports.addCategory = catchAsync(async (req, res, next) => {
+ await connectDB();
   if (req.file) req.body.image = `public/img/cats/${req.file.filename}`
   const data = await Category.create(req.body)
 
@@ -44,6 +47,7 @@ exports.addCategory = catchAsync(async (req, res, next) => {
 
 
 exports.updateCategory = catchAsync(async (req, res, next) => {
+ await connectDB();
   if (req.file) req.body.image = `public/img/cats/${req.file.filename}`
   const data = await Category.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
   if (!data) {
@@ -58,6 +62,7 @@ exports.updateCategory = catchAsync(async (req, res, next) => {
 
 
 exports.deleteCategory = catchAsync(async (req, res, next) => {
+ await connectDB();
   const catId = req.params.id;
   await Product.deleteMany({ category: catId })
 

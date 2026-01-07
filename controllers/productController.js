@@ -14,6 +14,7 @@ exports.resizeProductImages = imageResizer.resizeProductImages();
 
 
 exports.addProduct = catchAsync(async (req, res, next) => {
+ await connectDB();
 
   const data = await Product.create(req.body);
 
@@ -27,6 +28,7 @@ exports.addProduct = catchAsync(async (req, res, next) => {
 
 
 exports.updateProduct = catchAsync(async (req, res, next) => {
+ await connectDB();
   const data = await Product.findByIdAndUpdate(req.params.productId, req.body, { new: true, runValidators: true })
 
   if (!data) {
@@ -42,6 +44,7 @@ exports.updateProduct = catchAsync(async (req, res, next) => {
 
 
 exports.getProducts = catchAsync(async (req, res, next) => {
+ await connectDB();
 
   const data = await Product.find({ category: req.params.categoryId })
 
@@ -64,6 +67,7 @@ exports.getProducts = catchAsync(async (req, res, next) => {
 
 
 exports.getOneProduct = catchAsync(async (req, res, next) => {
+ await connectDB();
   const product = await Product.findById(req.params.productId).populate('reviews');
   if (!product) {
     return next(new AppError(`product not found`, 404))
@@ -77,6 +81,7 @@ exports.getOneProduct = catchAsync(async (req, res, next) => {
 
 
 exports.search = catchAsync(async (req, res, next) => {
+ await connectDB();
   const searchTerm = req.body.word;
 
   const data = await Product.find({
@@ -95,6 +100,7 @@ exports.search = catchAsync(async (req, res, next) => {
 
 
 exports.deleteProduct = catchAsync(async (req, res, next) => {
+ await connectDB();
   await Review.deleteMany({ product: req.params.productId })
   const product = await Product.findByIdAndDelete(req.params.id)
   if (!product) {
@@ -126,6 +132,7 @@ exports.lastArrivalsProducts = (req, res, next) => {
 
 
 exports.getAllProducts = catchAsync(async (req, res, next) => {
+ await connectDB();
   // EXECUTE QUERY
   const features = new APIFeatures(Product.find(), req.query)
     .filter()

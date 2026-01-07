@@ -39,6 +39,7 @@ const createSendToken = (user, statusCode, message, res) => {
 };
 
 exports.SignUp = catchAsync(async (req, res, next) => {
+ await connectDB();
   req.body.role = undefined;
   const newUser = await User.create(req.body);
   if (!newUser) {
@@ -48,6 +49,7 @@ exports.SignUp = catchAsync(async (req, res, next) => {
 });
 
 exports.login = catchAsync(async (req, res, next) => {
+ await connectDB();
   const { email, password } = req.body;
 
   //1) check email && password exist,
@@ -79,6 +81,7 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
+ await connectDB();
   const user = await User.findOne({ email: req.body.email }).select(
     'email name'
   );
@@ -112,6 +115,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   }
 });
 exports.verifyEmailOtp = catchAsync(async (req, res, next) => {
+ await connectDB();
   //just email otp
   const cryptoOtp = crypto
     .createHash('sha256')
@@ -141,6 +145,7 @@ exports.verifyEmailOtp = catchAsync(async (req, res, next) => {
 
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
+ await connectDB();
   // protect handler
   const user = req.user;
   if (!user) {
@@ -163,6 +168,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
+ await connectDB();
   //settings  hy48lha b3d el protect
   // 1) Get user from collection
 
@@ -201,6 +207,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 );
 
 exports.logOut = catchAsync(async (req, res, next) => {
+ await connectDB();
   res.cookie('jwt', 'loggedout', {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true
@@ -216,6 +223,7 @@ exports.logOut = catchAsync(async (req, res, next) => {
 
 //MIDDLEWARE CHECK IF USER STILL LOGGED IN
 exports.protect = catchAsync(async (req, res, next) => {
+ await connectDB();
   //1)Getting token and check it's there
   let token;
 
